@@ -12,21 +12,20 @@
       <geom name="lead_geom" type="ellipsoid" size="0.15 0.25 0.05" rgba="0 0 1 0.5" density="850"/>
       
       <!-- Slider joint allowing translation along X-axis -->
-      <joint name="lead_slide_x" type="slide" axis="1 0 0" pos="0 0 0.05" damping="0.1"/>
+      <joint name="lead_slide_x" type="slide" axis="1 0 0" pos="0 0 0.05" limited="true" range="0.0 2.0" damping="0.01"/>
       
       <!-- Slider joint allowing translation along Y-axis -->
-      <joint name="lead_slide_y" type="slide" axis="0 1 0" pos="0 0 0.05" damping="0.1"/>
+      <joint name="lead_slide_y" type="slide" axis="0 1 0" pos="0 0 0.05" limited="true" range="-0.5 0.5" damping="0.01"/>
       
-      <!-- Hinge joint allowing rotation around Z-axis -->
-      <joint name="lead_hinge_z" type="hinge" axis="0 0 1" pos="0 0 0.05" damping="0.1"/>
+      <!-- Hinge joint allowing rotation around Z-axis with range of ±180° -->
+      <joint name="lead_hinge_z" type="hinge" axis="0 0 1" pos="0 0 0.05" stiffness="2" damping=".1"/>
       
-      <!-- Sites for Lead Dancer's Shoulders (for tendon attachment) -->
+      <!-- Sites for Lead Dancer -->
       <site name="lead_cg" pos="0 0 0.0"/>
       <site name="lead_left_shoulder" pos="0 -0.25 0.0"/>
       <site name="lead_right_shoulder" pos="0 0.25 0.0"/>
+      <site name="lead_nose" pos="0.5 0 0.0" size="0.02" rgba="1 1 0 1"/> <!-- Nose site -->
 
-      <!-- Visualize Lead Dancer's Joint (CG) -->
-      <site name="lead_joint_visual" pos="0 0 0" size="0.05" rgba="1 0 0 1"/>
     </body>
 
     <!-- Follow Dancer -->
@@ -35,25 +34,23 @@
       <geom name="follow_geom" type="ellipsoid" size="0.12 0.20 0.05" rgba="0.5 0 0.5 0.5" density="650"/>
       
       <!-- Slider joint allowing translation along X-axis -->
-      <joint name="follow_slide_x" type="slide" axis="1 0 0" pos="0 0 0.05" damping="0.1"/>
+      <joint name="follow_slide_x" type="slide" axis="1 0 0" pos="0 0 0.05" limited="true" range="0.0 2.0" damping="0.01"/>
       
       <!-- Slider joint allowing translation along Y-axis -->
-      <joint name="follow_slide_y" type="slide" axis="0 1 0" pos="0 0 0.05" damping="0.1"/>
+      <joint name="follow_slide_y" type="slide" axis="0 1 0" pos="0 0 0.05" limited="true" range="-0.5 0.5" damping="0.01"/>
       
-      <!-- Hinge joint allowing rotation around Z-axis -->
-      <joint name="follow_hinge_z" type="hinge" axis="0 0 1" pos="0 0 0.05" damping="0.1"/>
+      <!-- Hinge joint allowing rotation around Z-axis (no range for follow dancer) -->
+      <joint name="follow_hinge_z" type="hinge" axis="0 0 1" pos="0 0 0.05" damping="0.05"/>
       
-      <!-- Sites for Follow Dancer's Shoulders (for tendon attachment) -->
+      <!-- Sites for Follow Dancer -->
       <site name="follow_cg" pos="0 0 0.0"/>
       <site name="follow_left_shoulder" pos="0 -0.2 0.0"/>
       <site name="follow_right_shoulder" pos="0 0.2 0.0"/>
+      <site name="follow_nose" pos="0.5 0 0.0" size="0.02" rgba="1 1 0 1"/> <!-- Nose site -->
 
-      <!-- Visualize Follow Dancer's Joint (CG) -->
-      <site name="follow_joint_visual" pos="0 0 0" size="0.05" rgba="1 0 0 1"/>
     </body>
 
     <!-- Salsa Coordinate Grid -->
-    <!-- Reorient Axial Positions to Align with Lead's X-axis -->
     <site name="slot1" pos="-1.0 0 0.001" size="0.02" rgba="1 0 0 1"/>
     <site name="slot2" pos="-0.5 0 0.001" size="0.02" rgba="1 0 0 1"/>
     <site name="slot3" pos="0.0 0 0.001" size="0.02" rgba="1 0 0 1"/>
@@ -77,31 +74,22 @@
 
   <actuator>
     <!-- General Force Actuators for Lead -->
-    <general name="lead_forward_force" body="lead" ctrllimited="true" ctrlrange="-20 20" forcelimited="true" forcerange="-20 20" gear="1 0 0 0 0 0"/>
-    <general name="lead_lateral_force" body="lead" ctrllimited="true" ctrlrange="-20 20" forcelimited="true" forcerange="-20 20" gear="0 1 0 0 0 0"/>
-    <general name="lead_moment" body="lead" ctrllimited="true" ctrlrange="-10 10" forcelimited="true" forcerange="-10 10" gear="0 0 1 0 0 0"/>
+    <general name="lead_forward_force" site="lead_cg" ctrllimited="true" ctrlrange="-10 10" forcelimited="true" forcerange="-10 10" gear="1 0 0 0 0 0"/>
+    <general name="lead_lateral_force" site="lead_cg" ctrllimited="true" ctrlrange="-10 10" forcelimited="true" forcerange="-10 10" gear="0 1 0 0 0 0"/>
+    <general name="lead_moment" site="lead_cg" ctrllimited="true" ctrlrange="-2 2" forcelimited="true" forcerange="-2 2" gear="0 0 0 0 0 1"/>
 
     <!-- General Force Actuators for Follow -->
-    <general name="follow_forward_force" body="follow" ctrllimited="true" ctrlrange="-20 20" forcelimited="true" forcerange="-20 20" gear="1 0 0 0 0 0"/>
-    <general name="follow_lateral_force" body="follow" ctrllimited="true" ctrlrange="-20 20" forcelimited="true" forcerange="-20 20" gear="0 1 0 0 0 0"/>
-    <general name="follow_moment" body="follow" ctrllimited="true" ctrlrange="-10 10" forcelimited="true" forcerange="-10 10" gear="0 0 1 0 0 0"/>
+    <general name="follow_forward_force" site="follow_cg" ctrllimited="true" ctrlrange="-10 10" forcelimited="true" forcerange="-10 10" gear="1 0 0 0 0 0"/>
+    <general name="follow_lateral_force" site="follow_cg" ctrllimited="true" ctrlrange="-10 10" forcelimited="true" forcerange="-10 10" gear="0 1 0 0 0 0"/>
+    <general name="follow_moment" site="follow_cg" ctrllimited="true" ctrlrange="-2 2" forcelimited="true" forcerange="-2 2" gear="0 0 0 0 0 1"/>
   </actuator>
 
   <!-- Tendon Elements: Representing Elastic String/ Rubber Band Between Lead and Follow -->
   <tendon>
-    <!-- Tendon connecting the Lead and Follow -->
-    <spatial name="dancer_arms_1" springlength=".75" stiffness="100" damping="5">
-      <site site="lead_left_shoulder"/>
-      <site site="follow_right_shoulder"/>
-    </spatial>
-  </tendon>
-
-  <tendon>
-    <!-- Tendon connecting the Lead and Follow -->
-    <spatial name="dancer_arms_2" springlength=".75" stiffness="100" damping="5">
-      <site site="lead_right_shoulder"/>
-      <site site="follow_left_shoulder"/>
-    </spatial>
+      <spatial name="alignment_spring" springlength="0" stiffness="10" damping="3">
+          <site site="lead_nose"/>
+          <site site="follow_cg"/>
+      </spatial>
   </tendon>
 
 </mujoco>
