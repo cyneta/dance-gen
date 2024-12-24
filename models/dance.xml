@@ -1,0 +1,73 @@
+<mujoco>
+  <compiler angle="degree"/>
+  <option timestep="0.01" gravity="0 0 -9.81" integrator="RK4"/>
+
+  <worldbody>
+    <!-- Ground Plane -->
+    <geom name="floor" type="plane" size="10 10 0.1" rgba="0.8 0.8 0.8 1" friction="1 0.005 0.001"/>
+
+    <!-- Lead Dancer -->
+    <body name="lead" pos="0 0 0.05">
+      <geom name="lead_geom" type="ellipsoid" size="0.25 0.15 0.05" rgba="0 0 1 1" density="850" friction="1 0.005 0.001"/>
+      <velocity linear="0 1 0" angular="0 0 0"/>
+    </body>
+
+    <!-- Follow Dancer -->
+    <body name="follow" pos="0 2.0 0.05">
+      <geom name="follow_geom" type="ellipsoid" size="0.2 0.12 0.05" rgba="0.5 0 0.5 1" density="650" friction="1 0.005 0.001"/>
+      <velocity linear="0 -1 0" angular="0 0 0"/>
+    </body>
+
+    <!-- Salsa Coordinate Grid -->
+    <!-- Axial Positions -->
+    <site name="axial1" pos="0 0 0.001" size="0.05" rgba="1 0 0 1"/>
+    <site name="axial2" pos="0 0.5 0.001" size="0.05" rgba="1 0 0 1"/>
+    <site name="axial3" pos="0 1.0 0.001" size="0.05" rgba="1 0 0 1"/>
+    <site name="axial4" pos="0 1.5 0.001" size="0.05" rgba="1 0 0 1"/>
+    <site name="axial5" pos="0 2.0 0.001" size="0.05" rgba="1 0 0 1"/>
+
+    <!-- Left Rail -->
+    <site name="left1" pos="-0.5 0 0.001" size="0.05" rgba="0 0 1 1"/>
+    <site name="left2" pos="-0.5 0.5 0.001" size="0.05" rgba="0 0 1 1"/>
+    <site name="left3" pos="-0.5 1.0 0.001" size="0.05" rgba="0 0 1 1"/>
+    <site name="left4" pos="-0.5 1.5 0.001" size="0.05" rgba="0 0 1 1"/>
+    <site name="left5" pos="-0.5 2.0 0.001" size="0.05" rgba="0 0 1 1"/>
+
+    <!-- Right Rail -->
+    <site name="right1" pos="0.5 0 0.001" size="0.05" rgba="0 1 0 1"/>
+    <site name="right2" pos="0.5 0.5 0.001" size="0.05" rgba="0 1 0 1"/>
+    <site name="right3" pos="0.5 1.0 0.001" size="0.05" rgba="0 1 0 1"/>
+    <site name="right4" pos="0.5 1.5 0.001" size="0.05" rgba="0 1 0 1"/>
+    <site name="right5" pos="0.5 2.0 0.001" size="0.05" rgba="0 1 0 1"/>
+  </worldbody>
+
+  <equality>
+    <!-- Soft Constraint: Keep Lead Inside Salsa Grid -->
+    <distance body1="lead" body2="floor" anchor="0 0 0" anchor2="-0.5 0 0" range="0 0.5" solimp="0.9 0.95 0.01" solref="0.02 1"/>
+    <distance body1="lead" body2="floor" anchor="0 0 0" anchor2="0.5 0 0" range="0 0.5" solimp="0.9 0.95 0.01" solref="0.02 1"/>
+    <distance body1="lead" body2="floor" anchor="0 0 0" anchor2="0 2.0 0" range="0 2.0" solimp="0.9 0.95 0.01" solref="0.02 1"/>
+
+    <!-- Soft Constraint: Keep Follow Inside Salsa Grid -->
+    <distance body1="follow" body2="floor" anchor="0 0 0" anchor2="-0.5 2.0 0" range="0 0.5" solimp="0.9 0.95 0.01" solref="0.02 1"/>
+    <distance body1="follow" body2="floor" anchor="0 0 0" anchor2="0.5 2.0 0" range="0 0.5" solimp="0.9 0.95 0.01" solref="0.02 1"/>
+    <distance body1="follow" body2="floor" anchor="0 0 0" anchor2="0 2.0 0" range="0 2.0" solimp="0.9 0.95 0.01" solref="0.02 1"/>
+
+    <!-- Maximum Distance Constraint: Prevent Dancers From Moving Too Far Apart -->
+    <distance body1="lead" body2="follow" anchor1="0 0 0" anchor2="0 0 0" range="0 2.0" solimp="0.9 0.95 0.01" solref="0.02 1"/>
+
+    <!-- Soft Constraint: Maximum Relative Angular Deflection Between Dancers -->
+    <angle body1="lead" body2="follow" range="-100 100" solimp="0.9 0.95 0.01" solref="0.02 1"/>
+  </equality>
+
+  <actuator>
+    <!-- Force and Moment Actuators for Lead -->
+    <body_force name="lead_forward_force" body="lead" frame="1" ctrlrange="-20 20" ctrldim="1" ctrllimited="true" ctrlaxis="1 0 0"/>
+    <body_force name="lead_lateral_force" body="lead" frame="1" ctrlrange="-20 20" ctrldim="1" ctrllimited="true" ctrlaxis="0 1 0"/>
+    <body_torque name="lead_moment" body="lead" frame="1" ctrlrange="-10 10" ctrllimited="true" ctrlaxis="0 0 1"/>
+
+    <!-- Force and Moment Actuators for Follow -->
+    <body_force name="follow_forward_force" body="follow" frame="1" ctrlrange="-20 20" ctrldim="1" ctrllimited="true" ctrlaxis="1 0 0"/>
+    <body_force name="follow_lateral_force" body="follow" frame="1" ctrlrange="-20 20" ctrldim="1" ctrllimited="true" ctrlaxis="0 1 0"/>
+    <body_torque name="follow_moment" body="follow" frame="1" ctrlrange="-10 10" ctrllimited="true" ctrlaxis="0 0 1"/>
+  </actuator>
+</mujoco>
